@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drift/drift.dart' as drift;
 import 'package:ambagan_trip/core/theme/app_text_styles.dart';
+import 'package:ambagan_trip/core/theme/app_colors.dart';
+import 'package:ambagan_trip/database/app_database.dart';
 import 'package:ambagan_trip/features/trips/trip_repository.dart';
+import 'package:ambagan_trip/features/participants/participant_repository.dart';
 
 class TripDetailsScreen extends ConsumerWidget {
   final int tripId;
@@ -57,7 +61,7 @@ class TripDetailsScreen extends ConsumerWidget {
 }
 
 class _OverviewTab extends StatelessWidget {
-  final trip;
+  final Trip trip;
 
   const _OverviewTab({required this.trip});
 
@@ -115,8 +119,122 @@ class _AmbaganTab extends ConsumerWidget {
 
   const _AmbaganTab({required this.tripId});
 
+  void _showAddParticipantDialog(BuildContext context, WidgetRef ref) {
+    final nameController = TextEditingController();
+    final contributionController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Add Participant'),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Name'),
+                  validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: contributionController,
+                  decoration: const InputDecoration(labelText: 'Expected Contribution'),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  validator: (v) {
+                    if (v != null && v.isNotEmpty && double.tryParse(v) == null) {
+                      return 'Invalid number';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (formKey.currentState!.validate()) {
+                  final name = nameController.text;
+                  final contribution = double.tryParse(contributionController.text) ?? 0.0;
+                  
+                  final participant = ParticipantsCompanion.insert(
+                    tripId: tripId,
+                    name: name,
+                    expectedContribution: drift.Value(contribution),
+                  );
+
+                  await ref.read(participantRepositoryProvider).addParticipant(participant);
+                  if (context.mounted) Navigator.pop(context);
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const Center(child: Text('Ambagan Placeholder'));
+    final participantsAsync = ref.watch(participantRepositoryProvider).watchParticipantsForTrip(tripId);
+
+    return Scaffold(
+      body: StreamBuilder(
+        stream: participantsAsync,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final participants = snapshot.data ?? [];
+          if (participants.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('No participants yet', style: AppTextStyles.cardTitle),
+                  const SizedBox(height: 8),
+                  const Text('Add members to start collecting ambagan.', style: AppTextStyles.body),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => _showAddParticipantDialog(context, ref),
+                    child: const Text('+ Add Participant'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: participants.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final participant = participants[index];
+              return Card(
+                child: ListTile(
+                  title: Text(participant.name, style: AppTextStyles.cardTitle),
+                  subtitle: Text('Expected: ₱${participant.expectedContribution.toStringAsFixed(2)}'),
+                  trailing: const Text('₱0.00 Due', style: TextStyle(color: AppColors.danger, fontWeight: FontWeight.bold)),
+                ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddParticipantDialog(context, ref),
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 }
