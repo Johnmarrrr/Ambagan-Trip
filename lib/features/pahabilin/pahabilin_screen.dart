@@ -56,7 +56,7 @@ class PahabilinScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<int>(
-                      value: selectedParticipantId,
+                      initialValue: selectedParticipantId,
                       decoration: const InputDecoration(labelText: 'Requested By'),
                       items: participants.map((p) => DropdownMenuItem(value: p.id, child: Text(p.name))).toList(),
                       onChanged: (v) => setState(() => selectedParticipantId = v),

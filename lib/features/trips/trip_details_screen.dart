@@ -547,3 +547,53 @@ class _FoodTab extends ConsumerWidget {
     );
   }
 }
+
+class _MoreTab extends StatelessWidget {
+  final int tripId;
+
+  const _MoreTab({required this.tripId});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.shopping_cart, color: AppColors.primaryGreen),
+            title: const Text('Shopping List', style: AppTextStyles.cardTitle),
+            subtitle: const Text('General trip items & supplies'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              context.push('/trips/$tripId/shopping-list');
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.favorite, color: Colors.pink),
+            title: const Text('Mga Pahabilin', style: AppTextStyles.cardTitle),
+            subtitle: const Text('Personal requests & pasalubong'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              context.push('/trips/$tripId/pahabilin');
+            },
+          ),
+        ),
+        const SizedBox(height: 24),
+        Card(
+          child: ListTile(
+            leading: const Icon(Icons.calculate, color: Colors.orange),
+            title: const Text('Trip Summary', style: AppTextStyles.cardTitle),
+            subtitle: const Text('Who owes who / Balances'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              // TODO: Phase 6
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
