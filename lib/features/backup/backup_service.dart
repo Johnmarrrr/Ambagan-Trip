@@ -21,7 +21,7 @@ class BackupService {
       if (!await dbFile.exists()) {
         throw Exception('Database file not found.');
       }
-      
+      // ignore: deprecated_member_use
       await Share.shareXFiles([XFile(dbFile.path)], text: 'Ambagan Trip Backup');
     } catch (e) {
       throw Exception('Failed to backup: $e');
