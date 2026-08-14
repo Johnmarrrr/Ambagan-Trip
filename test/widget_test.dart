@@ -14,7 +14,7 @@ void main() {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const ProviderScope(child: AmbaganApp()));
 
-    // Verify that the Home Screen text is shown.
-    expect(find.text('Home Screen'), findsOneWidget);
+    // Verify that the Home Screen Quick Actions are shown.
+    expect(find.text('Quick Actions'), findsOneWidget);
   });
 }
