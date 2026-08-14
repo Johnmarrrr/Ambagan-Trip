@@ -5,10 +5,11 @@ import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:ambagan_trip/database/tables/trips.dart';
+import 'package:ambagan_trip/database/daos/trip_dao.dart';
 
 part 'app_database.g.dart';
 
-@DriftDatabase(tables: [Trips])
+@DriftDatabase(tables: [Trips], daos: [TripDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
