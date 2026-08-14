@@ -14,18 +14,20 @@ import 'package:ambagan_trip/database/tables/foods.dart';
 import 'package:ambagan_trip/database/daos/food_dao.dart';
 import 'package:ambagan_trip/database/tables/ingredients.dart';
 import 'package:ambagan_trip/database/daos/ingredient_dao.dart';
+import 'package:ambagan_trip/database/tables/pahabilins.dart';
+import 'package:ambagan_trip/database/daos/pahabilin_dao.dart';
 
 part 'app_database.g.dart';
 
 @DriftDatabase(
-  tables: [Trips, Participants, Expenses, Foods, Ingredients],
-  daos: [TripDao, ParticipantDao, ExpenseDao, FoodDao, IngredientDao],
+  tables: [Trips, Participants, Expenses, Foods, Ingredients, Pahabilins],
+  daos: [TripDao, ParticipantDao, ExpenseDao, FoodDao, IngredientDao, PahabilinDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -43,6 +45,9 @@ class AppDatabase extends _$AppDatabase {
         if (from < 4) {
           await m.createTable(foods);
           await m.createTable(ingredients);
+        }
+        if (from < 5) {
+          await m.createTable(pahabilins);
         }
       },
     );

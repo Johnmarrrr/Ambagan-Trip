@@ -2464,6 +2464,471 @@ class IngredientsCompanion extends UpdateCompanion<Ingredient> {
   }
 }
 
+class $PahabilinsTable extends Pahabilins
+    with TableInfo<$PahabilinsTable, Pahabilin> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PahabilinsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _tripIdMeta = const VerificationMeta('tripId');
+  @override
+  late final GeneratedColumn<int> tripId = GeneratedColumn<int>(
+    'trip_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES trips (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _participantIdMeta = const VerificationMeta(
+    'participantId',
+  );
+  @override
+  late final GeneratedColumn<int> participantId = GeneratedColumn<int>(
+    'participant_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES participants (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _itemNameMeta = const VerificationMeta(
+    'itemName',
+  );
+  @override
+  late final GeneratedColumn<String> itemName = GeneratedColumn<String>(
+    'item_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _estimatedCostMeta = const VerificationMeta(
+    'estimatedCost',
+  );
+  @override
+  late final GeneratedColumn<double> estimatedCost = GeneratedColumn<double>(
+    'estimated_cost',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _isBoughtMeta = const VerificationMeta(
+    'isBought',
+  );
+  @override
+  late final GeneratedColumn<bool> isBought = GeneratedColumn<bool>(
+    'is_bought',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_bought" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    tripId,
+    participantId,
+    itemName,
+    estimatedCost,
+    isBought,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pahabilins';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Pahabilin> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('trip_id')) {
+      context.handle(
+        _tripIdMeta,
+        tripId.isAcceptableOrUnknown(data['trip_id']!, _tripIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_tripIdMeta);
+    }
+    if (data.containsKey('participant_id')) {
+      context.handle(
+        _participantIdMeta,
+        participantId.isAcceptableOrUnknown(
+          data['participant_id']!,
+          _participantIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_participantIdMeta);
+    }
+    if (data.containsKey('item_name')) {
+      context.handle(
+        _itemNameMeta,
+        itemName.isAcceptableOrUnknown(data['item_name']!, _itemNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemNameMeta);
+    }
+    if (data.containsKey('estimated_cost')) {
+      context.handle(
+        _estimatedCostMeta,
+        estimatedCost.isAcceptableOrUnknown(
+          data['estimated_cost']!,
+          _estimatedCostMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_bought')) {
+      context.handle(
+        _isBoughtMeta,
+        isBought.isAcceptableOrUnknown(data['is_bought']!, _isBoughtMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Pahabilin map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Pahabilin(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      tripId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}trip_id'],
+      )!,
+      participantId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}participant_id'],
+      )!,
+      itemName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_name'],
+      )!,
+      estimatedCost: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}estimated_cost'],
+      )!,
+      isBought: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_bought'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $PahabilinsTable createAlias(String alias) {
+    return $PahabilinsTable(attachedDatabase, alias);
+  }
+}
+
+class Pahabilin extends DataClass implements Insertable<Pahabilin> {
+  final int id;
+  final int tripId;
+  final int participantId;
+  final String itemName;
+  final double estimatedCost;
+  final bool isBought;
+  final DateTime createdAt;
+  const Pahabilin({
+    required this.id,
+    required this.tripId,
+    required this.participantId,
+    required this.itemName,
+    required this.estimatedCost,
+    required this.isBought,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['trip_id'] = Variable<int>(tripId);
+    map['participant_id'] = Variable<int>(participantId);
+    map['item_name'] = Variable<String>(itemName);
+    map['estimated_cost'] = Variable<double>(estimatedCost);
+    map['is_bought'] = Variable<bool>(isBought);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  PahabilinsCompanion toCompanion(bool nullToAbsent) {
+    return PahabilinsCompanion(
+      id: Value(id),
+      tripId: Value(tripId),
+      participantId: Value(participantId),
+      itemName: Value(itemName),
+      estimatedCost: Value(estimatedCost),
+      isBought: Value(isBought),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory Pahabilin.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Pahabilin(
+      id: serializer.fromJson<int>(json['id']),
+      tripId: serializer.fromJson<int>(json['tripId']),
+      participantId: serializer.fromJson<int>(json['participantId']),
+      itemName: serializer.fromJson<String>(json['itemName']),
+      estimatedCost: serializer.fromJson<double>(json['estimatedCost']),
+      isBought: serializer.fromJson<bool>(json['isBought']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'tripId': serializer.toJson<int>(tripId),
+      'participantId': serializer.toJson<int>(participantId),
+      'itemName': serializer.toJson<String>(itemName),
+      'estimatedCost': serializer.toJson<double>(estimatedCost),
+      'isBought': serializer.toJson<bool>(isBought),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  Pahabilin copyWith({
+    int? id,
+    int? tripId,
+    int? participantId,
+    String? itemName,
+    double? estimatedCost,
+    bool? isBought,
+    DateTime? createdAt,
+  }) => Pahabilin(
+    id: id ?? this.id,
+    tripId: tripId ?? this.tripId,
+    participantId: participantId ?? this.participantId,
+    itemName: itemName ?? this.itemName,
+    estimatedCost: estimatedCost ?? this.estimatedCost,
+    isBought: isBought ?? this.isBought,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  Pahabilin copyWithCompanion(PahabilinsCompanion data) {
+    return Pahabilin(
+      id: data.id.present ? data.id.value : this.id,
+      tripId: data.tripId.present ? data.tripId.value : this.tripId,
+      participantId: data.participantId.present
+          ? data.participantId.value
+          : this.participantId,
+      itemName: data.itemName.present ? data.itemName.value : this.itemName,
+      estimatedCost: data.estimatedCost.present
+          ? data.estimatedCost.value
+          : this.estimatedCost,
+      isBought: data.isBought.present ? data.isBought.value : this.isBought,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Pahabilin(')
+          ..write('id: $id, ')
+          ..write('tripId: $tripId, ')
+          ..write('participantId: $participantId, ')
+          ..write('itemName: $itemName, ')
+          ..write('estimatedCost: $estimatedCost, ')
+          ..write('isBought: $isBought, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    tripId,
+    participantId,
+    itemName,
+    estimatedCost,
+    isBought,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Pahabilin &&
+          other.id == this.id &&
+          other.tripId == this.tripId &&
+          other.participantId == this.participantId &&
+          other.itemName == this.itemName &&
+          other.estimatedCost == this.estimatedCost &&
+          other.isBought == this.isBought &&
+          other.createdAt == this.createdAt);
+}
+
+class PahabilinsCompanion extends UpdateCompanion<Pahabilin> {
+  final Value<int> id;
+  final Value<int> tripId;
+  final Value<int> participantId;
+  final Value<String> itemName;
+  final Value<double> estimatedCost;
+  final Value<bool> isBought;
+  final Value<DateTime> createdAt;
+  const PahabilinsCompanion({
+    this.id = const Value.absent(),
+    this.tripId = const Value.absent(),
+    this.participantId = const Value.absent(),
+    this.itemName = const Value.absent(),
+    this.estimatedCost = const Value.absent(),
+    this.isBought = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  PahabilinsCompanion.insert({
+    this.id = const Value.absent(),
+    required int tripId,
+    required int participantId,
+    required String itemName,
+    this.estimatedCost = const Value.absent(),
+    this.isBought = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  }) : tripId = Value(tripId),
+       participantId = Value(participantId),
+       itemName = Value(itemName);
+  static Insertable<Pahabilin> custom({
+    Expression<int>? id,
+    Expression<int>? tripId,
+    Expression<int>? participantId,
+    Expression<String>? itemName,
+    Expression<double>? estimatedCost,
+    Expression<bool>? isBought,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (tripId != null) 'trip_id': tripId,
+      if (participantId != null) 'participant_id': participantId,
+      if (itemName != null) 'item_name': itemName,
+      if (estimatedCost != null) 'estimated_cost': estimatedCost,
+      if (isBought != null) 'is_bought': isBought,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  PahabilinsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? tripId,
+    Value<int>? participantId,
+    Value<String>? itemName,
+    Value<double>? estimatedCost,
+    Value<bool>? isBought,
+    Value<DateTime>? createdAt,
+  }) {
+    return PahabilinsCompanion(
+      id: id ?? this.id,
+      tripId: tripId ?? this.tripId,
+      participantId: participantId ?? this.participantId,
+      itemName: itemName ?? this.itemName,
+      estimatedCost: estimatedCost ?? this.estimatedCost,
+      isBought: isBought ?? this.isBought,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (tripId.present) {
+      map['trip_id'] = Variable<int>(tripId.value);
+    }
+    if (participantId.present) {
+      map['participant_id'] = Variable<int>(participantId.value);
+    }
+    if (itemName.present) {
+      map['item_name'] = Variable<String>(itemName.value);
+    }
+    if (estimatedCost.present) {
+      map['estimated_cost'] = Variable<double>(estimatedCost.value);
+    }
+    if (isBought.present) {
+      map['is_bought'] = Variable<bool>(isBought.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PahabilinsCompanion(')
+          ..write('id: $id, ')
+          ..write('tripId: $tripId, ')
+          ..write('participantId: $participantId, ')
+          ..write('itemName: $itemName, ')
+          ..write('estimatedCost: $estimatedCost, ')
+          ..write('isBought: $isBought, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2472,6 +2937,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ExpensesTable expenses = $ExpensesTable(this);
   late final $FoodsTable foods = $FoodsTable(this);
   late final $IngredientsTable ingredients = $IngredientsTable(this);
+  late final $PahabilinsTable pahabilins = $PahabilinsTable(this);
   late final TripDao tripDao = TripDao(this as AppDatabase);
   late final ParticipantDao participantDao = ParticipantDao(
     this as AppDatabase,
@@ -2479,6 +2945,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final ExpenseDao expenseDao = ExpenseDao(this as AppDatabase);
   late final FoodDao foodDao = FoodDao(this as AppDatabase);
   late final IngredientDao ingredientDao = IngredientDao(this as AppDatabase);
+  late final PahabilinDao pahabilinDao = PahabilinDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2489,6 +2956,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     expenses,
     foods,
     ingredients,
+    pahabilins,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2533,6 +3001,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         limitUpdateKind: UpdateKind.delete,
       ),
       result: [TableUpdate('ingredients', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'trips',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('pahabilins', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'participants',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('pahabilins', kind: UpdateKind.delete)],
     ),
   ]);
 }
@@ -2637,6 +3119,24 @@ final class $$TripsTableReferences
     ).filter((f) => f.tripId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_ingredientsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$PahabilinsTable, List<Pahabilin>>
+  _pahabilinsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.pahabilins,
+    aliasName: 'trips__id__pahabilins__trip_id',
+  );
+
+  $$PahabilinsTableProcessedTableManager get pahabilinsRefs {
+    final manager = $$PahabilinsTableTableManager(
+      $_db,
+      $_db.pahabilins,
+    ).filter((f) => f.tripId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_pahabilinsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2792,6 +3292,31 @@ class $$TripsTableFilterComposer extends Composer<_$AppDatabase, $TripsTable> {
           }) => $$IngredientsTableFilterComposer(
             $db: $db,
             $table: $db.ingredients,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> pahabilinsRefs(
+    Expression<bool> Function($$PahabilinsTableFilterComposer f) f,
+  ) {
+    final $$PahabilinsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.pahabilins,
+      getReferencedColumn: (t) => t.tripId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PahabilinsTableFilterComposer(
+            $db: $db,
+            $table: $db.pahabilins,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3004,6 +3529,31 @@ class $$TripsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> pahabilinsRefs<T extends Object>(
+    Expression<T> Function($$PahabilinsTableAnnotationComposer a) f,
+  ) {
+    final $$PahabilinsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.pahabilins,
+      getReferencedColumn: (t) => t.tripId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PahabilinsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.pahabilins,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$TripsTableTableManager
@@ -3024,6 +3574,7 @@ class $$TripsTableTableManager
             bool expensesRefs,
             bool foodsRefs,
             bool ingredientsRefs,
+            bool pahabilinsRefs,
           })
         > {
   $$TripsTableTableManager(_$AppDatabase db, $TripsTable table)
@@ -3097,6 +3648,7 @@ class $$TripsTableTableManager
                 expensesRefs = false,
                 foodsRefs = false,
                 ingredientsRefs = false,
+                pahabilinsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -3105,6 +3657,7 @@ class $$TripsTableTableManager
                     if (expensesRefs) db.expenses,
                     if (foodsRefs) db.foods,
                     if (ingredientsRefs) db.ingredients,
+                    if (pahabilinsRefs) db.pahabilins,
                   ],
                   addJoins: null,
                   getPrefetchedDataCallback: (items) async {
@@ -3181,6 +3734,23 @@ class $$TripsTableTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (pahabilinsRefs)
+                        await $_getPrefetchedData<Trip, $TripsTable, Pahabilin>(
+                          currentTable: table,
+                          referencedTable: $$TripsTableReferences
+                              ._pahabilinsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TripsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).pahabilinsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.tripId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -3206,6 +3776,7 @@ typedef $$TripsTableProcessedTableManager =
         bool expensesRefs,
         bool foodsRefs,
         bool ingredientsRefs,
+        bool pahabilinsRefs,
       })
     >;
 typedef $$ParticipantsTableCreateCompanionBuilder =
@@ -3266,6 +3837,24 @@ final class $$ParticipantsTableReferences
     ).filter((f) => f.paidById.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_expensesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$PahabilinsTable, List<Pahabilin>>
+  _pahabilinsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.pahabilins,
+    aliasName: 'participants__id__pahabilins__participant_id',
+  );
+
+  $$PahabilinsTableProcessedTableManager get pahabilinsRefs {
+    final manager = $$PahabilinsTableTableManager(
+      $_db,
+      $_db.pahabilins,
+    ).filter((f) => f.participantId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_pahabilinsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -3355,6 +3944,31 @@ class $$ParticipantsTableFilterComposer
           }) => $$ExpensesTableFilterComposer(
             $db: $db,
             $table: $db.expenses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> pahabilinsRefs(
+    Expression<bool> Function($$PahabilinsTableFilterComposer f) f,
+  ) {
+    final $$PahabilinsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.pahabilins,
+      getReferencedColumn: (t) => t.participantId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PahabilinsTableFilterComposer(
+            $db: $db,
+            $table: $db.pahabilins,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3512,6 +4126,31 @@ class $$ParticipantsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> pahabilinsRefs<T extends Object>(
+    Expression<T> Function($$PahabilinsTableAnnotationComposer a) f,
+  ) {
+    final $$PahabilinsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.pahabilins,
+      getReferencedColumn: (t) => t.participantId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$PahabilinsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.pahabilins,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ParticipantsTableTableManager
@@ -3527,7 +4166,11 @@ class $$ParticipantsTableTableManager
           $$ParticipantsTableUpdateCompanionBuilder,
           (Participant, $$ParticipantsTableReferences),
           Participant,
-          PrefetchHooks Function({bool tripId, bool expensesRefs})
+          PrefetchHooks Function({
+            bool tripId,
+            bool expensesRefs,
+            bool pahabilinsRefs,
+          })
         > {
   $$ParticipantsTableTableManager(_$AppDatabase db, $ParticipantsTable table)
     : super(
@@ -3588,67 +4231,96 @@ class $$ParticipantsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({tripId = false, expensesRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (expensesRefs) db.expenses],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (tripId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.tripId,
-                                referencedTable: $$ParticipantsTableReferences
-                                    ._tripIdTable(db),
-                                referencedColumn: $$ParticipantsTableReferences
-                                    ._tripIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
+          prefetchHooksCallback:
+              ({tripId = false, expensesRefs = false, pahabilinsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (expensesRefs) db.expenses,
+                    if (pahabilinsRefs) db.pahabilins,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (tripId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.tripId,
+                                    referencedTable:
+                                        $$ParticipantsTableReferences
+                                            ._tripIdTable(db),
+                                    referencedColumn:
+                                        $$ParticipantsTableReferences
+                                            ._tripIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (expensesRefs)
+                        await $_getPrefetchedData<
+                          Participant,
+                          $ParticipantsTable,
+                          Expense
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ParticipantsTableReferences
+                              ._expensesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ParticipantsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).expensesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.paidById == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (pahabilinsRefs)
+                        await $_getPrefetchedData<
+                          Participant,
+                          $ParticipantsTable,
+                          Pahabilin
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ParticipantsTableReferences
+                              ._pahabilinsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ParticipantsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).pahabilinsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.participantId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (expensesRefs)
-                    await $_getPrefetchedData<
-                      Participant,
-                      $ParticipantsTable,
-                      Expense
-                    >(
-                      currentTable: table,
-                      referencedTable: $$ParticipantsTableReferences
-                          ._expensesRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$ParticipantsTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).expensesRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.paidById == item.id),
-                      typedResults: items,
-                    ),
-                ];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -3665,7 +4337,11 @@ typedef $$ParticipantsTableProcessedTableManager =
       $$ParticipantsTableUpdateCompanionBuilder,
       (Participant, $$ParticipantsTableReferences),
       Participant,
-      PrefetchHooks Function({bool tripId, bool expensesRefs})
+      PrefetchHooks Function({
+        bool tripId,
+        bool expensesRefs,
+        bool pahabilinsRefs,
+      })
     >;
 typedef $$ExpensesTableCreateCompanionBuilder =
     ExpensesCompanion Function({
@@ -4969,6 +5645,444 @@ typedef $$IngredientsTableProcessedTableManager =
       Ingredient,
       PrefetchHooks Function({bool tripId, bool foodId})
     >;
+typedef $$PahabilinsTableCreateCompanionBuilder =
+    PahabilinsCompanion Function({
+      Value<int> id,
+      required int tripId,
+      required int participantId,
+      required String itemName,
+      Value<double> estimatedCost,
+      Value<bool> isBought,
+      Value<DateTime> createdAt,
+    });
+typedef $$PahabilinsTableUpdateCompanionBuilder =
+    PahabilinsCompanion Function({
+      Value<int> id,
+      Value<int> tripId,
+      Value<int> participantId,
+      Value<String> itemName,
+      Value<double> estimatedCost,
+      Value<bool> isBought,
+      Value<DateTime> createdAt,
+    });
+
+final class $$PahabilinsTableReferences
+    extends BaseReferences<_$AppDatabase, $PahabilinsTable, Pahabilin> {
+  $$PahabilinsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $TripsTable _tripIdTable(_$AppDatabase db) =>
+      db.trips.createAlias('pahabilins__trip_id__trips__id');
+
+  $$TripsTableProcessedTableManager get tripId {
+    final $_column = $_itemColumn<int>('trip_id')!;
+
+    final manager = $$TripsTableTableManager(
+      $_db,
+      $_db.trips,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_tripIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $ParticipantsTable _participantIdTable(_$AppDatabase db) => db
+      .participants
+      .createAlias('pahabilins__participant_id__participants__id');
+
+  $$ParticipantsTableProcessedTableManager get participantId {
+    final $_column = $_itemColumn<int>('participant_id')!;
+
+    final manager = $$ParticipantsTableTableManager(
+      $_db,
+      $_db.participants,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_participantIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$PahabilinsTableFilterComposer
+    extends Composer<_$AppDatabase, $PahabilinsTable> {
+  $$PahabilinsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get itemName => $composableBuilder(
+    column: $table.itemName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get estimatedCost => $composableBuilder(
+    column: $table.estimatedCost,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isBought => $composableBuilder(
+    column: $table.isBought,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TripsTableFilterComposer get tripId {
+    final $$TripsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tripId,
+      referencedTable: $db.trips,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TripsTableFilterComposer(
+            $db: $db,
+            $table: $db.trips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ParticipantsTableFilterComposer get participantId {
+    final $$ParticipantsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.participantId,
+      referencedTable: $db.participants,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ParticipantsTableFilterComposer(
+            $db: $db,
+            $table: $db.participants,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PahabilinsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PahabilinsTable> {
+  $$PahabilinsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get itemName => $composableBuilder(
+    column: $table.itemName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get estimatedCost => $composableBuilder(
+    column: $table.estimatedCost,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isBought => $composableBuilder(
+    column: $table.isBought,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TripsTableOrderingComposer get tripId {
+    final $$TripsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tripId,
+      referencedTable: $db.trips,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TripsTableOrderingComposer(
+            $db: $db,
+            $table: $db.trips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ParticipantsTableOrderingComposer get participantId {
+    final $$ParticipantsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.participantId,
+      referencedTable: $db.participants,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ParticipantsTableOrderingComposer(
+            $db: $db,
+            $table: $db.participants,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PahabilinsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PahabilinsTable> {
+  $$PahabilinsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get itemName =>
+      $composableBuilder(column: $table.itemName, builder: (column) => column);
+
+  GeneratedColumn<double> get estimatedCost => $composableBuilder(
+    column: $table.estimatedCost,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get isBought =>
+      $composableBuilder(column: $table.isBought, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$TripsTableAnnotationComposer get tripId {
+    final $$TripsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.tripId,
+      referencedTable: $db.trips,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TripsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$ParticipantsTableAnnotationComposer get participantId {
+    final $$ParticipantsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.participantId,
+      referencedTable: $db.participants,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ParticipantsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.participants,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$PahabilinsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PahabilinsTable,
+          Pahabilin,
+          $$PahabilinsTableFilterComposer,
+          $$PahabilinsTableOrderingComposer,
+          $$PahabilinsTableAnnotationComposer,
+          $$PahabilinsTableCreateCompanionBuilder,
+          $$PahabilinsTableUpdateCompanionBuilder,
+          (Pahabilin, $$PahabilinsTableReferences),
+          Pahabilin,
+          PrefetchHooks Function({bool tripId, bool participantId})
+        > {
+  $$PahabilinsTableTableManager(_$AppDatabase db, $PahabilinsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PahabilinsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PahabilinsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PahabilinsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> tripId = const Value.absent(),
+                Value<int> participantId = const Value.absent(),
+                Value<String> itemName = const Value.absent(),
+                Value<double> estimatedCost = const Value.absent(),
+                Value<bool> isBought = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => PahabilinsCompanion(
+                id: id,
+                tripId: tripId,
+                participantId: participantId,
+                itemName: itemName,
+                estimatedCost: estimatedCost,
+                isBought: isBought,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int tripId,
+                required int participantId,
+                required String itemName,
+                Value<double> estimatedCost = const Value.absent(),
+                Value<bool> isBought = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => PahabilinsCompanion.insert(
+                id: id,
+                tripId: tripId,
+                participantId: participantId,
+                itemName: itemName,
+                estimatedCost: estimatedCost,
+                isBought: isBought,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$PahabilinsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({tripId = false, participantId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (tripId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.tripId,
+                                referencedTable: $$PahabilinsTableReferences
+                                    ._tripIdTable(db),
+                                referencedColumn: $$PahabilinsTableReferences
+                                    ._tripIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+                    if (participantId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.participantId,
+                                referencedTable: $$PahabilinsTableReferences
+                                    ._participantIdTable(db),
+                                referencedColumn: $$PahabilinsTableReferences
+                                    ._participantIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$PahabilinsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PahabilinsTable,
+      Pahabilin,
+      $$PahabilinsTableFilterComposer,
+      $$PahabilinsTableOrderingComposer,
+      $$PahabilinsTableAnnotationComposer,
+      $$PahabilinsTableCreateCompanionBuilder,
+      $$PahabilinsTableUpdateCompanionBuilder,
+      (Pahabilin, $$PahabilinsTableReferences),
+      Pahabilin,
+      PrefetchHooks Function({bool tripId, bool participantId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4983,4 +6097,6 @@ class $AppDatabaseManager {
       $$FoodsTableTableManager(_db, _db.foods);
   $$IngredientsTableTableManager get ingredients =>
       $$IngredientsTableTableManager(_db, _db.ingredients);
+  $$PahabilinsTableTableManager get pahabilins =>
+      $$PahabilinsTableTableManager(_db, _db.pahabilins);
 }
