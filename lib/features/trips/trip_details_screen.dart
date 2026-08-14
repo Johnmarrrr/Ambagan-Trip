@@ -6,6 +6,7 @@ import 'package:ambagan_trip/core/theme/app_colors.dart';
 import 'package:ambagan_trip/database/app_database.dart';
 import 'package:ambagan_trip/features/trips/trip_repository.dart';
 import 'package:ambagan_trip/features/participants/participant_repository.dart';
+import 'package:ambagan_trip/features/expenses/expense_repository.dart';
 
 class TripDetailsScreen extends ConsumerWidget {
   final int tripId;
@@ -48,7 +49,7 @@ class TripDetailsScreen extends ConsumerWidget {
               children: [
                 _OverviewTab(trip: trip),
                 _AmbaganTab(tripId: trip.id),
-                const Center(child: Text('Expenses')),
+                _ExpensesTab(tripId: trip.id),
                 const Center(child: Text('Food')),
                 const Center(child: Text('More')),
               ],
@@ -236,5 +237,181 @@ class _AmbaganTab extends ConsumerWidget {
         child: const Icon(Icons.add),
       ),
     );
+  }
+}
+
+class _ExpensesTab extends ConsumerWidget {
+  final int tripId;
+
+  const _ExpensesTab({required this.tripId});
+
+  void _showAddExpenseDialog(BuildContext context, WidgetRef ref) async {
+    final descriptionController = TextEditingController();
+    final amountController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    
+    String selectedCategory = 'Others';
+    int? selectedPaidById;
+    
+    // Fetch participants for the dropdown
+    final participants = await ref.read(participantRepositoryProvider).watchParticipantsForTrip(tripId).first;
+
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Add Expense'),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        controller: descriptionController,
+                        decoration: const InputDecoration(labelText: 'Description (e.g., Gas, Dinner)'),
+                        validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: amountController,
+                        decoration: const InputDecoration(labelText: 'Amount (₱)'),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        validator: (v) {
+                          if (v == null || v.isEmpty) return 'Required';
+                          if (double.tryParse(v) == null) return 'Invalid number';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: selectedCategory,
+                        decoration: const InputDecoration(labelText: 'Category'),
+                        items: ['Transport', 'Accommodation', 'Food', 'Activities', 'Others']
+                            .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                            .toList(),
+                        onChanged: (v) => setState(() => selectedCategory = v!),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<int?>(
+                        value: selectedPaidById,
+                        decoration: const InputDecoration(labelText: 'Paid By (Optional)'),
+                        items: [
+                          const DropdownMenuItem<int?>(value: null, child: Text('Shared / Shared Pot')),
+                          ...participants.map((p) => DropdownMenuItem<int?>(value: p.id, child: Text(p.name))),
+                        ],
+                        onChanged: (v) => setState(() => selectedPaidById = v),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      final description = descriptionController.text;
+                      final amount = double.parse(amountController.text);
+                      
+                      final expense = drift.ExpensesCompanion.insert(
+                        tripId: tripId,
+                        category: selectedCategory,
+                        description: description,
+                        amount: amount,
+                        paidById: drift.Value(selectedPaidById),
+                      );
+
+                      await ref.read(expenseRepositoryProvider).addExpense(expense);
+                      if (context.mounted) Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final expensesAsync = ref.watch(expenseRepositoryProvider).watchExpensesForTrip(tripId);
+
+    return Scaffold(
+      body: StreamBuilder(
+        stream: expensesAsync,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final expenses = snapshot.data ?? [];
+          if (expenses.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('No expenses yet', style: AppTextStyles.cardTitle),
+                  const SizedBox(height: 8),
+                  const Text('Record your trip spending here.', style: AppTextStyles.body),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => _showAddExpenseDialog(context, ref),
+                    child: const Text('+ Add Expense'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: expenses.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final expense = expenses[index];
+              return Card(
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: AppColors.primaryLight,
+                    child: Icon(
+                      _getCategoryIcon(expense.category),
+                      color: AppColors.primaryGreen,
+                    ),
+                  ),
+                  title: Text(expense.description, style: AppTextStyles.cardTitle),
+                  subtitle: Text(expense.category),
+                  trailing: Text('₱${expense.amount.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddExpenseDialog(context, ref),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  IconData _getCategoryIcon(String category) {
+    switch (category) {
+      case 'Transport': return Icons.directions_car;
+      case 'Accommodation': return Icons.hotel;
+      case 'Food': return Icons.restaurant;
+      case 'Activities': return Icons.local_activity;
+      default: return Icons.receipt;
+    }
   }
 }
