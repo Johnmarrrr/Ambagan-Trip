@@ -289,7 +289,7 @@ class _ExpensesTab extends ConsumerWidget {
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<String>(
-                        value: selectedCategory,
+                        initialValue: selectedCategory,
                         decoration: const InputDecoration(labelText: 'Category'),
                         items: ['Transport', 'Accommodation', 'Food', 'Activities', 'Others']
                             .map((c) => DropdownMenuItem(value: c, child: Text(c)))
@@ -298,7 +298,7 @@ class _ExpensesTab extends ConsumerWidget {
                       ),
                       const SizedBox(height: 16),
                       DropdownButtonFormField<int?>(
-                        value: selectedPaidById,
+                        initialValue: selectedPaidById,
                         decoration: const InputDecoration(labelText: 'Paid By (Optional)'),
                         items: [
                           const DropdownMenuItem<int?>(value: null, child: Text('Shared / Shared Pot')),
@@ -321,7 +321,7 @@ class _ExpensesTab extends ConsumerWidget {
                       final description = descriptionController.text;
                       final amount = double.parse(amountController.text);
                       
-                      final expense = drift.ExpensesCompanion.insert(
+                      final expense = ExpensesCompanion.insert(
                         tripId: tripId,
                         category: selectedCategory,
                         description: description,
