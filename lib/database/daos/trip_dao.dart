@@ -6,7 +6,7 @@ part 'trip_dao.g.dart';
 
 @DriftAccessor(tables: [Trips])
 class TripDao extends DatabaseAccessor<AppDatabase> with _$TripDaoMixin {
-  TripDao(AppDatabase db) : super(db);
+  TripDao(super.db);
 
   Stream<List<Trip>> watchAllTrips() => (select(trips)..orderBy([(t) => OrderingTerm.desc(t.createdAt)])).watch();
   

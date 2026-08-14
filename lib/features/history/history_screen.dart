@@ -4,25 +4,19 @@ import 'package:go_router/go_router.dart';
 import 'package:ambagan_trip/core/theme/app_text_styles.dart';
 import 'package:ambagan_trip/features/trips/trip_repository.dart';
 
-class TripsScreen extends ConsumerWidget {
-  const TripsScreen({super.key});
+class HistoryScreen extends ConsumerWidget {
+  const HistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tripsAsync = ref.watch(tripRepositoryProvider).watchAllTrips();
+    final completedTripsAsync = ref.watch(tripRepositoryProvider).watchCompletedTrips();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('All Trips'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => context.push('/trips/create'),
-          ),
-        ],
+        title: const Text('History'),
       ),
       body: StreamBuilder(
-        stream: tripsAsync,
+        stream: completedTripsAsync,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -31,7 +25,7 @@ class TripsScreen extends ConsumerWidget {
           final trips = snapshot.data ?? [];
           if (trips.isEmpty) {
             return const Center(
-              child: Text('No trips found', style: AppTextStyles.body),
+              child: Text('No completed trips yet', style: AppTextStyles.body),
             );
           }
 
