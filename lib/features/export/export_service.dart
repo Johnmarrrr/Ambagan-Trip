@@ -56,11 +56,11 @@ class ExportService {
     }
     rows.add(['Total Expenses', totalExpenses]);
     
-    String csv = const ListToCsvConverter().convert(rows);
+    String csvStr = csv.encode(rows);
     
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/trip_${trip.id}_summary.csv');
-    await file.writeAsString(csv);
+    await file.writeAsString(csvStr);
     
     // ignore: deprecated_member_use
     await Share.shareXFiles([XFile(file.path)], text: '${trip.name} CSV Summary');
