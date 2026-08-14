@@ -5,6 +5,7 @@ import 'package:ambagan_trip/core/theme/app_text_styles.dart';
 import 'package:ambagan_trip/database/app_database.dart';
 import 'package:ambagan_trip/features/participants/participant_repository.dart';
 import 'package:ambagan_trip/features/expenses/expense_repository.dart';
+import 'package:ambagan_trip/features/export/export_service.dart';
 
 class TripSummaryScreen extends ConsumerWidget {
   final int tripId;
@@ -19,6 +20,34 @@ class TripSummaryScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trip Summary'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf),
+            tooltip: 'Export PDF',
+            onPressed: () async {
+              try {
+                await ref.read(exportServiceProvider).exportPdf(tripId);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to export PDF: $e')));
+                }
+              }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.table_chart),
+            tooltip: 'Export CSV',
+            onPressed: () async {
+              try {
+                await ref.read(exportServiceProvider).exportCsv(tripId);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to export CSV: $e')));
+                }
+              }
+            },
+          ),
+        ],
       ),
       body: StreamBuilder(
         stream: participantsAsync,
