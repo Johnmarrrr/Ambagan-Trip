@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:ambagan_trip/core/theme/app_text_styles.dart';
 import 'package:ambagan_trip/core/theme/app_colors.dart';
@@ -7,6 +8,7 @@ import 'package:ambagan_trip/database/app_database.dart';
 import 'package:ambagan_trip/features/trips/trip_repository.dart';
 import 'package:ambagan_trip/features/participants/participant_repository.dart';
 import 'package:ambagan_trip/features/expenses/expense_repository.dart';
+import 'package:ambagan_trip/features/food/food_repository.dart';
 
 class TripDetailsScreen extends ConsumerWidget {
   final int tripId;
@@ -413,5 +415,135 @@ class _ExpensesTab extends ConsumerWidget {
       case 'Activities': return Icons.local_activity;
       default: return Icons.receipt;
     }
+  }
+}
+
+class _FoodTab extends ConsumerWidget {
+  final int tripId;
+
+  const _FoodTab({required this.tripId});
+
+  void _showAddFoodDialog(BuildContext context, WidgetRef ref) {
+    final nameController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    String selectedMeal = 'Breakfast';
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Add Meal'),
+              content: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: nameController,
+                      decoration: const InputDecoration(labelText: 'Dish Name (e.g., Adobo)'),
+                      validator: (v) => v == null || v.isEmpty ? 'Required' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      initialValue: selectedMeal,
+                      decoration: const InputDecoration(labelText: 'Meal Type'),
+                      items: ['Breakfast', 'Lunch', 'Dinner', 'Snacks']
+                          .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                          .toList(),
+                      onChanged: (v) => setState(() => selectedMeal = v!),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (formKey.currentState!.validate()) {
+                      final name = nameController.text;
+                      final food = FoodsCompanion.insert(
+                        tripId: tripId,
+                        name: name,
+                        mealType: selectedMeal,
+                      );
+                      await ref.read(foodRepositoryProvider).addFood(food);
+                      if (context.mounted) Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final foodsAsync = ref.watch(foodRepositoryProvider).watchFoodsForTrip(tripId);
+
+    return Scaffold(
+      body: StreamBuilder(
+        stream: foodsAsync,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final foods = snapshot.data ?? [];
+          if (foods.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('No meals planned yet', style: AppTextStyles.cardTitle),
+                  const SizedBox(height: 8),
+                  const Text('Plan your menu for the trip.', style: AppTextStyles.body),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => _showAddFoodDialog(context, ref),
+                    child: const Text('+ Add Meal'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: foods.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final food = foods[index];
+              return Card(
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: AppColors.primaryLight,
+                    child: const Icon(Icons.restaurant_menu, color: AppColors.primaryGreen),
+                  ),
+                  title: Text(food.name, style: AppTextStyles.cardTitle),
+                  subtitle: Text(food.mealType),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    context.push('/trips/$tripId/food/${food.id}');
+                  },
+                ),
+              );
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddFoodDialog(context, ref),
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 }
