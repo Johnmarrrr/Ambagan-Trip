@@ -2,10 +2,8 @@ import 'dart:io';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:share_plus/share_plus.dart';
-import 'package:ambagan_trip/database/app_database.dart';
 import 'package:ambagan_trip/features/trips/trip_repository.dart';
 import 'package:ambagan_trip/features/participants/participant_repository.dart';
 import 'package:ambagan_trip/features/expenses/expense_repository.dart';
@@ -21,7 +19,6 @@ class ExportService {
 
   Future<void> exportCsv(int tripId) async {
     final trip = await _ref.read(tripRepositoryProvider).watchTrip(tripId).first;
-    if (trip == null) return;
     
     final participantsStream = _ref.read(participantRepositoryProvider).watchParticipantsForTrip(tripId);
     final participants = await participantsStream.first;
@@ -68,7 +65,6 @@ class ExportService {
 
   Future<void> exportPdf(int tripId) async {
     final trip = await _ref.read(tripRepositoryProvider).watchTrip(tripId).first;
-    if (trip == null) return;
     
     final participantsStream = _ref.read(participantRepositoryProvider).watchParticipantsForTrip(tripId);
     final participants = await participantsStream.first;
