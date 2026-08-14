@@ -50,7 +50,7 @@ class TripDetailsScreen extends ConsumerWidget {
                 _OverviewTab(trip: trip),
                 _AmbaganTab(tripId: trip.id),
                 _ExpensesTab(tripId: trip.id),
-                const Center(child: Text('Food')),
+                _FoodTab(tripId: trip.id),
                 const Center(child: Text('More')),
               ],
             ),
