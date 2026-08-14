@@ -673,6 +673,18 @@ class $ParticipantsTable extends Participants
         requiredDuringInsert: false,
         defaultValue: const Constant(0.0),
       );
+  static const VerificationMeta _amountPaidMeta = const VerificationMeta(
+    'amountPaid',
+  );
+  @override
+  late final GeneratedColumn<double> amountPaid = GeneratedColumn<double>(
+    'amount_paid',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -705,6 +717,7 @@ class $ParticipantsTable extends Participants
     contact,
     notes,
     expectedContribution,
+    amountPaid,
     createdAt,
     updatedAt,
   ];
@@ -760,6 +773,12 @@ class $ParticipantsTable extends Participants
         ),
       );
     }
+    if (data.containsKey('amount_paid')) {
+      context.handle(
+        _amountPaidMeta,
+        amountPaid.isAcceptableOrUnknown(data['amount_paid']!, _amountPaidMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -805,6 +824,10 @@ class $ParticipantsTable extends Participants
         DriftSqlType.double,
         data['${effectivePrefix}expected_contribution'],
       )!,
+      amountPaid: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}amount_paid'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -829,6 +852,7 @@ class Participant extends DataClass implements Insertable<Participant> {
   final String? contact;
   final String? notes;
   final double expectedContribution;
+  final double amountPaid;
   final DateTime createdAt;
   final DateTime updatedAt;
   const Participant({
@@ -838,6 +862,7 @@ class Participant extends DataClass implements Insertable<Participant> {
     this.contact,
     this.notes,
     required this.expectedContribution,
+    required this.amountPaid,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -854,6 +879,7 @@ class Participant extends DataClass implements Insertable<Participant> {
       map['notes'] = Variable<String>(notes);
     }
     map['expected_contribution'] = Variable<double>(expectedContribution);
+    map['amount_paid'] = Variable<double>(amountPaid);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -871,6 +897,7 @@ class Participant extends DataClass implements Insertable<Participant> {
           ? const Value.absent()
           : Value(notes),
       expectedContribution: Value(expectedContribution),
+      amountPaid: Value(amountPaid),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -890,6 +917,7 @@ class Participant extends DataClass implements Insertable<Participant> {
       expectedContribution: serializer.fromJson<double>(
         json['expectedContribution'],
       ),
+      amountPaid: serializer.fromJson<double>(json['amountPaid']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -904,6 +932,7 @@ class Participant extends DataClass implements Insertable<Participant> {
       'contact': serializer.toJson<String?>(contact),
       'notes': serializer.toJson<String?>(notes),
       'expectedContribution': serializer.toJson<double>(expectedContribution),
+      'amountPaid': serializer.toJson<double>(amountPaid),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -916,6 +945,7 @@ class Participant extends DataClass implements Insertable<Participant> {
     Value<String?> contact = const Value.absent(),
     Value<String?> notes = const Value.absent(),
     double? expectedContribution,
+    double? amountPaid,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => Participant(
@@ -925,6 +955,7 @@ class Participant extends DataClass implements Insertable<Participant> {
     contact: contact.present ? contact.value : this.contact,
     notes: notes.present ? notes.value : this.notes,
     expectedContribution: expectedContribution ?? this.expectedContribution,
+    amountPaid: amountPaid ?? this.amountPaid,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -938,6 +969,9 @@ class Participant extends DataClass implements Insertable<Participant> {
       expectedContribution: data.expectedContribution.present
           ? data.expectedContribution.value
           : this.expectedContribution,
+      amountPaid: data.amountPaid.present
+          ? data.amountPaid.value
+          : this.amountPaid,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -952,6 +986,7 @@ class Participant extends DataClass implements Insertable<Participant> {
           ..write('contact: $contact, ')
           ..write('notes: $notes, ')
           ..write('expectedContribution: $expectedContribution, ')
+          ..write('amountPaid: $amountPaid, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -966,6 +1001,7 @@ class Participant extends DataClass implements Insertable<Participant> {
     contact,
     notes,
     expectedContribution,
+    amountPaid,
     createdAt,
     updatedAt,
   );
@@ -979,6 +1015,7 @@ class Participant extends DataClass implements Insertable<Participant> {
           other.contact == this.contact &&
           other.notes == this.notes &&
           other.expectedContribution == this.expectedContribution &&
+          other.amountPaid == this.amountPaid &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -990,6 +1027,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
   final Value<String?> contact;
   final Value<String?> notes;
   final Value<double> expectedContribution;
+  final Value<double> amountPaid;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   const ParticipantsCompanion({
@@ -999,6 +1037,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
     this.contact = const Value.absent(),
     this.notes = const Value.absent(),
     this.expectedContribution = const Value.absent(),
+    this.amountPaid = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
@@ -1009,6 +1048,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
     this.contact = const Value.absent(),
     this.notes = const Value.absent(),
     this.expectedContribution = const Value.absent(),
+    this.amountPaid = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   }) : tripId = Value(tripId),
@@ -1020,6 +1060,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
     Expression<String>? contact,
     Expression<String>? notes,
     Expression<double>? expectedContribution,
+    Expression<double>? amountPaid,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
   }) {
@@ -1031,6 +1072,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
       if (notes != null) 'notes': notes,
       if (expectedContribution != null)
         'expected_contribution': expectedContribution,
+      if (amountPaid != null) 'amount_paid': amountPaid,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
@@ -1043,6 +1085,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
     Value<String?>? contact,
     Value<String?>? notes,
     Value<double>? expectedContribution,
+    Value<double>? amountPaid,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
   }) {
@@ -1053,6 +1096,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
       contact: contact ?? this.contact,
       notes: notes ?? this.notes,
       expectedContribution: expectedContribution ?? this.expectedContribution,
+      amountPaid: amountPaid ?? this.amountPaid,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -1081,6 +1125,9 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
         expectedContribution.value,
       );
     }
+    if (amountPaid.present) {
+      map['amount_paid'] = Variable<double>(amountPaid.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1099,6 +1146,7 @@ class ParticipantsCompanion extends UpdateCompanion<Participant> {
           ..write('contact: $contact, ')
           ..write('notes: $notes, ')
           ..write('expectedContribution: $expectedContribution, ')
+          ..write('amountPaid: $amountPaid, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -3787,6 +3835,7 @@ typedef $$ParticipantsTableCreateCompanionBuilder =
       Value<String?> contact,
       Value<String?> notes,
       Value<double> expectedContribution,
+      Value<double> amountPaid,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
     });
@@ -3798,6 +3847,7 @@ typedef $$ParticipantsTableUpdateCompanionBuilder =
       Value<String?> contact,
       Value<String?> notes,
       Value<double> expectedContribution,
+      Value<double> amountPaid,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
     });
@@ -3892,6 +3942,11 @@ class $$ParticipantsTableFilterComposer
 
   ColumnFilters<double> get expectedContribution => $composableBuilder(
     column: $table.expectedContribution,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get amountPaid => $composableBuilder(
+    column: $table.amountPaid,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4013,6 +4068,11 @@ class $$ParticipantsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get amountPaid => $composableBuilder(
+    column: $table.amountPaid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -4070,6 +4130,11 @@ class $$ParticipantsTableAnnotationComposer
 
   GeneratedColumn<double> get expectedContribution => $composableBuilder(
     column: $table.expectedContribution,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get amountPaid => $composableBuilder(
+    column: $table.amountPaid,
     builder: (column) => column,
   );
 
@@ -4191,6 +4256,7 @@ class $$ParticipantsTableTableManager
                 Value<String?> contact = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<double> expectedContribution = const Value.absent(),
+                Value<double> amountPaid = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
               }) => ParticipantsCompanion(
@@ -4200,6 +4266,7 @@ class $$ParticipantsTableTableManager
                 contact: contact,
                 notes: notes,
                 expectedContribution: expectedContribution,
+                amountPaid: amountPaid,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),
@@ -4211,6 +4278,7 @@ class $$ParticipantsTableTableManager
                 Value<String?> contact = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<double> expectedContribution = const Value.absent(),
+                Value<double> amountPaid = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
               }) => ParticipantsCompanion.insert(
@@ -4220,6 +4288,7 @@ class $$ParticipantsTableTableManager
                 contact: contact,
                 notes: notes,
                 expectedContribution: expectedContribution,
+                amountPaid: amountPaid,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
               ),

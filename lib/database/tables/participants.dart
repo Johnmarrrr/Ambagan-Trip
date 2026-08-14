@@ -8,6 +8,7 @@ class Participants extends Table {
   TextColumn get contact => text().nullable()();
   TextColumn get notes => text().nullable()();
   RealColumn get expectedContribution => real().withDefault(const Constant(0.0))();
+  RealColumn get amountPaid => real().withDefault(const Constant(0.0))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
