@@ -10,6 +10,7 @@ import 'package:ambagan_trip/features/trips/trip_details_screen.dart';
 import 'package:ambagan_trip/features/food/food_details_screen.dart';
 import 'package:ambagan_trip/features/shopping/shopping_list_screen.dart';
 import 'package:ambagan_trip/features/pahabilin/pahabilin_screen.dart';
+import 'package:ambagan_trip/features/summary/trip_summary_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -76,6 +77,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final tripId = int.parse(state.pathParameters['id']!);
         return PahabilinScreen(tripId: tripId);
+      },
+    ),
+    GoRoute(
+      path: '/trips/:id/summary',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final tripId = int.parse(state.pathParameters['id']!);
+        return TripSummaryScreen(tripId: tripId);
       },
     ),
   ],

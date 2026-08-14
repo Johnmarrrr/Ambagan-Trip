@@ -20,18 +20,30 @@ class TripSummaryScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Trip Summary'),
       ),
-      body: participantsAsync.when(
-        data: (participants) {
-          return expensesAsync.when(
-            data: (expenses) {
-              return _buildSummary(context, participants, expenses);
+      body: StreamBuilder(
+        stream: participantsAsync,
+        builder: (context, participantsSnapshot) {
+          if (participantsSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (participantsSnapshot.hasError) {
+            return Center(child: Text('Error: ${participantsSnapshot.error}'));
+          }
+
+          return StreamBuilder(
+            stream: expensesAsync,
+            builder: (context, expensesSnapshot) {
+              if (expensesSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (expensesSnapshot.hasError) {
+                return Center(child: Text('Error: ${expensesSnapshot.error}'));
+              }
+
+              return _buildSummary(context, participantsSnapshot.data ?? [], expensesSnapshot.data ?? []);
             },
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, st) => Center(child: Text('Error: $e')),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, st) => Center(child: Text('Error: $e')),
       ),
     );
   }

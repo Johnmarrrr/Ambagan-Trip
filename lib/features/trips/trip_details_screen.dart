@@ -122,16 +122,17 @@ class _AmbaganTab extends ConsumerWidget {
 
   const _AmbaganTab({required this.tripId});
 
-  void _showAddParticipantDialog(BuildContext context, WidgetRef ref) {
-    final nameController = TextEditingController();
-    final contributionController = TextEditingController();
+  void _showParticipantDialog(BuildContext context, WidgetRef ref, [Participant? existing]) {
+    final nameController = TextEditingController(text: existing?.name);
+    final contributionController = TextEditingController(text: existing?.expectedContribution.toString());
+    final paidController = TextEditingController(text: existing?.amountPaid.toString());
     final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Add Participant'),
+          title: Text(existing == null ? 'Add Participant' : 'Edit Participant'),
           content: Form(
             key: formKey,
             child: Column(
@@ -147,17 +148,27 @@ class _AmbaganTab extends ConsumerWidget {
                   controller: contributionController,
                   decoration: const InputDecoration(labelText: 'Expected Contribution'),
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  validator: (v) {
-                    if (v != null && v.isNotEmpty && double.tryParse(v) == null) {
-                      return 'Invalid number';
-                    }
-                    return null;
-                  },
                 ),
+                if (existing != null) ...[
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: paidController,
+                    decoration: const InputDecoration(labelText: 'Amount Paid to Pot'),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  ),
+                ]
               ],
             ),
           ),
           actions: [
+            if (existing != null)
+              TextButton(
+                onPressed: () async {
+                  await ref.read(participantRepositoryProvider).deleteParticipant(existing.id);
+                  if (context.mounted) Navigator.pop(context);
+                },
+                child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              ),
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text('Cancel'),
@@ -166,15 +177,25 @@ class _AmbaganTab extends ConsumerWidget {
               onPressed: () async {
                 if (formKey.currentState!.validate()) {
                   final name = nameController.text;
-                  final contribution = double.tryParse(contributionController.text) ?? 0.0;
+                  final expected = double.tryParse(contributionController.text) ?? 0.0;
+                  final paid = double.tryParse(paidController.text) ?? 0.0;
                   
-                  final participant = ParticipantsCompanion.insert(
-                    tripId: tripId,
-                    name: name,
-                    expectedContribution: drift.Value(contribution),
-                  );
-
-                  await ref.read(participantRepositoryProvider).addParticipant(participant);
+                  if (existing == null) {
+                    final participant = ParticipantsCompanion.insert(
+                      tripId: tripId,
+                      name: name,
+                      expectedContribution: drift.Value(expected),
+                    );
+                    await ref.read(participantRepositoryProvider).addParticipant(participant);
+                  } else {
+                    final updated = existing.copyWith(
+                      name: name,
+                      expectedContribution: expected,
+                      amountPaid: paid,
+                    );
+                    await ref.read(participantRepositoryProvider).updateParticipant(updated);
+                  }
+                  
                   if (context.mounted) Navigator.pop(context);
                 }
               },
@@ -209,7 +230,7 @@ class _AmbaganTab extends ConsumerWidget {
                   const Text('Add members to start collecting ambagan.', style: AppTextStyles.body),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () => _showAddParticipantDialog(context, ref),
+                    onPressed: () => _showParticipantDialog(context, ref),
                     child: const Text('+ Add Participant'),
                   ),
                 ],
@@ -223,11 +244,20 @@ class _AmbaganTab extends ConsumerWidget {
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final participant = participants[index];
+              final due = participant.expectedContribution - participant.amountPaid;
+              
               return Card(
                 child: ListTile(
                   title: Text(participant.name, style: AppTextStyles.cardTitle),
-                  subtitle: Text('Expected: ₱${participant.expectedContribution.toStringAsFixed(2)}'),
-                  trailing: const Text('₱0.00 Due', style: TextStyle(color: AppColors.danger, fontWeight: FontWeight.bold)),
+                  subtitle: Text('Paid: ₱${participant.amountPaid.toStringAsFixed(2)} / ₱${participant.expectedContribution.toStringAsFixed(2)}'),
+                  trailing: Text(
+                    due > 0 ? '₱${due.toStringAsFixed(2)} Due' : 'Settled', 
+                    style: TextStyle(
+                      color: due > 0 ? AppColors.danger : AppColors.primaryGreen, 
+                      fontWeight: FontWeight.bold
+                    )
+                  ),
+                  onTap: () => _showParticipantDialog(context, ref, participant),
                 ),
               );
             },
@@ -235,7 +265,7 @@ class _AmbaganTab extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddParticipantDialog(context, ref),
+        onPressed: () => _showParticipantDialog(context, ref),
         child: const Icon(Icons.add),
       ),
     );
@@ -589,7 +619,7 @@ class _MoreTab extends StatelessWidget {
             subtitle: const Text('Who owes who / Balances'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // TODO: Phase 6
+              context.push('/trips/$tripId/summary');
             },
           ),
         ),
